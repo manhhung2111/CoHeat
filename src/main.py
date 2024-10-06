@@ -71,6 +71,18 @@ def main(seed, data):
                 best_vld_ndcg = metrics['val']['ndcg'][crit]
                 best_content = content
 
+                # Save model and optimizer state
+                checkpoint = {
+                    'epoch': epoch,
+                    'model_state_dict': model.state_dict(),
+                    'optimizer_state_dict': optimizer.state_dict(),
+                    'best_vld_rec': best_vld_rec,
+                    'best_vld_ndcg': best_vld_ndcg,
+                    'conf': conf,
+                }
+                torch.save(checkpoint,  f'best_model_epoch_{epoch}.pt')
+                print(f"Model saved at epoch {epoch}")
+
     print('============================ BEST ============================')
     print(best_content)
 
