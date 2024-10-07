@@ -7,15 +7,29 @@ import torch
 import torch.optim as optim
 import yaml
 from tqdm import tqdm
+import os
 
 from model import CoHeat
 from utils import Datasets
+
+def load_checkpoint(model, optimizer, filename):
+    checkpoint = torch.load(filename)
+    model.load_state_dict(checkpoint['model_state_dict'])
+    optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+    epoch = checkpoint['epoch']
+    best_vld_rec = checkpoint['best_vld_rec']
+    best_vld_ndcg = checkpoint['best_vld_ndcg']
+    conf = checkpoint['conf']
+    
+    return model, optimizer, epoch, best_vld_rec, best_vld_ndcg, conf
+
 
 
 @click.command()
 @click.option('--seed', type=int, default=0)
 @click.option('--data', type=str, default='NetEase')
-def main(seed, data):
+@click.option('--resume', type=str, default=None)  # Add resume option to specify checkpoint file
+def main(seed, data, resume):
     set_seed(seed)
     conf = yaml.safe_load(open("config.yaml"))[data]
     conf['dataset'] = data
@@ -32,6 +46,13 @@ def main(seed, data):
     optimizer = optim.Adam(model.parameters(), lr=conf["lr"], weight_decay=conf["lambda2"])
     crit = 20
     best_vld_rec, best_vld_ndcg, best_content = 0., 0., ''
+
+    start_epoch = 1
+
+    if resume and os.path.isfile(resume):
+        model, optimizer, start_epoch, best_vld_rec, best_vld_ndcg, conf = load_checkpoint(model, optimizer, resume)
+        print(f"Resuming training from epoch {start_epoch}")
+
 
     for epoch in range(1, conf["epochs"]+1):
         model.train(True)
