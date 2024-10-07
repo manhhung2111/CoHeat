@@ -63,5 +63,5 @@ iFashion:
 
   max_temp: 10000
 
-  epochs: 100
+  epochs: 50
   test_interval: 5
