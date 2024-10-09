@@ -14,6 +14,9 @@ from utils import Datasets
 
 def load_checkpoint(model, optimizer, filename):
     checkpoint = torch.load(filename)
+    print("-------CHECKPOINT-------------")
+    print(checkpoint)
+    print("-------CHECKPOINT-------------")
     model.load_state_dict(checkpoint['model_state_dict'])
     optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
     epoch = checkpoint['epoch']
@@ -53,8 +56,7 @@ def main(seed, data, resume):
         model, optimizer, start_epoch, best_vld_rec, best_vld_ndcg, conf = load_checkpoint(model, optimizer, resume)
         print(f"Resuming training from epoch {start_epoch}")
 
-
-    for epoch in range(1, conf["epochs"]+1):
+    for epoch in range(start_epoch, conf["epochs"]+1):
         model.train(True)
         pbar = tqdm(enumerate(dataset.train_loader), total=len(dataset.train_loader))
         cur_instance_num, loss_avg, bpr_loss_avg, c_loss_avg = 0., 0., 0., 0.
