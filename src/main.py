@@ -56,7 +56,7 @@ def main(seed, data, resume):
         model, optimizer, start_epoch, best_vld_rec, best_vld_ndcg, conf = load_checkpoint(model, optimizer, resume)
         print(f"Resuming training from epoch {start_epoch}")
 
-    for epoch in range(start_epoch, conf["epochs"]+1):
+    for epoch in range(start_epoch, 80):
         model.train(True)
         pbar = tqdm(enumerate(dataset.train_loader), total=len(dataset.train_loader))
         cur_instance_num, loss_avg, bpr_loss_avg, c_loss_avg = 0., 0., 0., 0.
